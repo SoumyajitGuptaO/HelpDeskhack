@@ -77,7 +77,7 @@ app.use((req, res, next)=>{
 });
 
 app.get('/', (req, res)=>{
-    res.redirect('/register');
+    res.redirect('/login');
 })
 
 app.get('/register', (req, res)=>{
