@@ -16,8 +16,8 @@ const passport= require('passport');
 const LocalStrategy= require('passport-local');
 const MongoDBStore= require("connect-mongo");
 const mongoose= require('mongoose');
-// const dbUrl= 'mongodb://localhost:27017/helpdesk';
-const dbUrl= process.env.DB_URL;
+const dbUrl= 'mongodb://localhost:27017/helpdesk';
+//const dbUrl= process.env.DB_URL;
 const secret= 'idontknow';
 const {isLoggedIn}= require('./middleware.js');
 
