@@ -1,0 +1,27 @@
+<% layout('layout/../boilerplate.ejs') %>
+
+<link rel="stylesheet" href="styles/login.css">
+
+<form action="/login" method="post">
+    <h2>Login</h2>
+    <label for="username">Enter Username: </label>
+    <input type="text" name="username" placeholder="Username">
+    <br>
+    <label for="password">Enter Password: </label>
+    <input type="password" name="password" placeholder="Password">
+    <br>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="post" id="inlineRadio2" value="Employee">
+        <label class="form-check-label" for="inlineRadio2">Employee</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="post" id="inlineRadio1" value="Admin">
+        <label class="form-check-label" for="inlineRadio1">Admin</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="post" id="inlineRadio2" value="Legal Team">
+        <label class="form-check-label" for="inlineRadio2">Legal Team</label>
+    </div>
+    <br>
+    <button class="btn btn-primary">Submit</button>
+</form>

@@ -10,6 +10,7 @@ const MongoDBStore= require("connect-mongo");
 const mongoose= require('mongoose');
 const dbUrl= 'mongodb://localhost:27017/helpdesk';
 const secret= 'idontknow';
+const {isLoggedIn}= require('./middleware.js');
 
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
@@ -73,12 +74,26 @@ app.post('/register', async(req, res)=>{
         const {fullname, username, email, phone, post, password}= req.body;
         const u = new User({fullname, username, email, phone, post});
         const newUser= await User.register(u, password);
-        res.send('successfull');
+        res.redirect('/home');
     }catch(error){
         console.log('ERROR', error)
         res.redirect('/register');
     }
+})
 
+app.get('/login', (req, res)=>{
+    res.render('templates/login.ejs');
+})
+
+app.post('/login', passport.authenticate('local', {failureRedirect: '/login'}), async(req, res)=>{
+   const data= req.body;
+   const u= await User.find({username: data.username})
+
+   res.redirect('/home');
+})
+
+app.get('/home', isLoggedIn, (req, res)=>{
+    res.render('templates/home.ejs')
 })
 
 app.listen(8080, ()=>{
