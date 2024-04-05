@@ -14,7 +14,7 @@
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
             <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+                    <div class="sidebar-brand-icon"><img src="images/logo.png" style="max-width: 35px;" alt=""></div>
                     <div class="sidebar-brand-text mx-3"><span>Helpdesk</span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
@@ -112,6 +112,7 @@
                         </ul>
                     </div>
                 </nav>
+                <% if(currentUser.post=="Employee"){ %>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">Queries</h3>
                     <div class="card shadow">
@@ -131,7 +132,14 @@
                                 </div>
                                 <% if(currentUser.post=="Employee"){ %>
                                     <div class="col-md-6">
-                                        <div class="text-md-end dataTables_filter" id="dataTable_filter"><label class="form-label"><a href="/raiseticket" style="text-decoration: none;">Raise a Ticket</a></label></div>
+                                        <div class="text-md-end dataTables_filter" id="dataTable_filter"><label class="form-label">
+                                            <h5 class="fw-bold">
+                                                <a href="/raiseticket" style="text-decoration: none;">
+                                                    <img src="images/plus.png" style="max-width: 25px;" alt="">
+                                                    Raise a Ticket
+                                                </a>
+                                            </h5>
+                                        </label></div>
                                     </div>
                                 <% } %>
                             </div>
@@ -155,7 +163,14 @@
                                                         <td><%= q._id %></td>
                                                         <td><%= q.date %></td>
                                                         <td><%= q.body %></td>
-                                                        <td><%= q.status %></td>
+                                                        <td>
+                                                            <% if(q.status!="Resolved"){ %>
+                                                                <%= q.status %>
+                                                            <% } %>
+                                                            <% if(q.status=="Resolved"){ %>
+                                                                <a href="/resolution_<%= q._id %>" style="text-decoration: none;">(View Resolution)</a>
+                                                            <% } %>
+                                                        </td>
                                                     </tr>
                                                 <% } %>
                                             </tbody>
@@ -166,6 +181,57 @@
                         </div>
                     </div>
                 </div>
+            <% } else if(currentUser.post="Legal Team Member") { %>
+                <div class="container-fluid">
+                    <h3 class="text-dark mb-4">Queries</h3>
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 fw-bold">Your queries</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+
+                                <div class="col-md-6 text-nowrap">
+                                    <div style="display: none;" id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><label class="form-label">Show&nbsp;<select class="d-inline-block form-select form-select-sm">
+                                                <option value="10" selected="">10</option>
+                                                <option value="25">25</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>&nbsp;</label></div>
+                                </div>
+                            </div>
+                            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                                <% if(currentUser.post=="Legal Team Member"){ %>
+                                    <div>
+                                        <table class="table my-0" id="dataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Subject</th>
+                                                    <th>Query Id</th>
+                                                    <th>Date</th>
+                                                    <th>Description</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% for(let q of Q){ %>
+                                                    <tr>
+                                                        <td><%= q.title %></td>
+                                                        <td><%= q._id %></td>
+                                                        <td><%= q.date %></td>
+                                                        <td><%= q.body.length > 80 ? q.body.substring(0, 80) + '...' : q.body %></td>
+                                                        <td><%= q.status %> <% if(q.status=="Assigned"){ %> <a href="/resolve_<%= q._id %>" style="text-decoration: none;">(Resolve)</a> <% } %></td>
+                                                    </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
             </div>
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">

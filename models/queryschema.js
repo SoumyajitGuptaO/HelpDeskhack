@@ -5,7 +5,9 @@ const querySchema= mongoose.Schema({
     body: String,
     date: String,
     author: String,
-    status: String
+    status: String,
+    assignedto: String,
+    resolution: String
 })
 
 module.exports= mongoose.model('Query', querySchema);

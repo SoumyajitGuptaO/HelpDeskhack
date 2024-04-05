@@ -3,6 +3,16 @@ const Schema= mongoose.Schema;
 const passportLocalMongoose= require('passport-local-mongoose');
 const Query= require('./queryschema.js');
 
+const ImageSchema= new Schema({
+    url: String,
+    filename: String,
+});
+
+ImageSchema.virtual('thumbnail').get(function (){
+    return this.url.replace('/upload', '/upload/w_270,h_270');
+});
+const opts= {toJSON: {virtuals: true}};
+
 const userschema= new Schema({
     fullname: String,
     username: String,
@@ -17,8 +27,9 @@ const userschema= new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Query'
         }
-    ]
-});
+    ],
+    image: [ImageSchema]
+}, opts);
 
 userschema.plugin(passportLocalMongoose);
 

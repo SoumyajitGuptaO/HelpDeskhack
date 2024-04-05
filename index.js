@@ -1,6 +1,13 @@
+if(process.env.NODE_ENV !== 'production'){
+    require('dotenv').config();
+}
+
 const express= require('express');
 const app= express();
 const path= require('path');
+const multer= require('multer');
+const {storage} = require('./cloudinary/cloudinary.js');
+const upload= multer({storage});
 const session= require('express-session');
 const ejsMate= require('ejs-mate');
 const User= require('./models/userschema.js');
@@ -9,7 +16,8 @@ const passport= require('passport');
 const LocalStrategy= require('passport-local');
 const MongoDBStore= require("connect-mongo");
 const mongoose= require('mongoose');
-const dbUrl= 'mongodb://localhost:27017/helpdesk';
+// const dbUrl= 'mongodb://localhost:27017/helpdesk';
+const dbUrl= process.env.DB_URL;
 const secret= 'idontknow';
 const {isLoggedIn}= require('./middleware.js');
 
@@ -19,6 +27,7 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
 
 app.set('views', path.join(__dirname, 'views'));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect(dbUrl);
@@ -75,10 +84,11 @@ app.get('/register', (req, res)=>{
     res.render('templates/register.ejs');
 })
 
-app.post('/register', async(req, res)=>{
+app.post('/register', upload.array('image'), async(req, res)=>{
     try{
         const {fullname, username, email, phone, post, address, city, country, password}= req.body;
         const u = new User({fullname, username, email, phone, post, address, city, country});
+        u.image =req.files.map(f=>({url:f.path, filename: f.filename}));
         const newUser= await User.register(u, password);
         req.login(newUser, (err)=>
         {
@@ -113,14 +123,23 @@ app.get('/profile', isLoggedIn, (req, res)=>{
     res.render('templates/profile.ejs', {user});
 })
 
-app.get('/home', isLoggedIn, (req, res)=>{
+app.get('/dashboard', isLoggedIn, async(req, res)=>{
     const user= req.user;
-    res.render('templates/home.ejs', {user})
+    const allqueries= await Query.find({});
+    const resolved= await Query.find({status: 'Resolved'});
+    var Q= await Query.find({})
+    const arr= [allqueries.length, resolved.length]
+    res.render('templates/dashboard.ejs', {user, arr, Q})
 })
 
 app.get('/queries', isLoggedIn, async(req, res)=>{
     const user= req.user;
-    const Q= await Query.find({author: user.username});
+    if(user.post=="Employee"){
+        var Q= await Query.find({author: user.username});
+    }else if(user.post=="Legal Team Member"){
+        var Q= await Query.find({assignedto: user._id})
+    }
+
     res.render('templates/queries.ejs', {user, Q});
 })
 
@@ -154,6 +173,89 @@ app.post('/raiseticket', isLoggedIn, async(req, res)=>{
     await user.save();
 
     res.redirect('/queries');
+})
+
+app.get('/:id', isLoggedIn, async(req, res)=>{
+    const user= req.user;
+    const users= await User.find({post: "Legal Team Member"});
+    const id= req.params.id;
+
+    var query_id;
+
+    if(id.includes('resolve')){
+        query_id= id.replace('resolve_', '');
+
+        var q= await Query.findById(query_id);
+        var u= await User.find({username: q.author})
+
+        res.render('templates/viewquery.ejs', {user, q, u, users});
+    }else if(id.includes('resolution')){
+        query_id= id.replace('resolution_', '');
+
+        var q= await Query.findById(query_id);
+        var u= await User.find({username: q.author})
+
+        var r= await User.findById(q.assignedto);
+        const resolvedby= r.fullname;
+        res.render('templates/viewquery.ejs', {user, q, u, resolvedby});
+    }else{
+        var q= await Query.findById(id);
+        var u= await User.find({username: q.author})
+
+        res.render('templates/viewquery.ejs', {user, q, u, users});
+    }
+})
+
+app.post('/:id', isLoggedIn, async(req, res)=>{
+    const user= req.user;
+
+    if(user.post=="Admin"){
+        const id= req.params.id.toString();
+
+        var query_id='';
+        var assign_id='';
+
+        var idx;
+
+        for(let i=0; i<id.length; i++){
+            if(id[i]!='_'){
+                query_id+=id[i];
+            }else{
+                idx=i;
+                break;
+            }
+        }
+
+        for(let i=idx+1; i<id.length; i++){
+            assign_id+=id[i];
+        }
+
+        console.log({query_id, assign_id})
+
+        const q= await Query.findById(query_id);
+        q.status= 'Assigned';
+
+        const u= await User.findById(assign_id);
+        u.queries.push(q);
+
+        q.assignedto= assign_id;
+
+        u.save();
+        q.save();
+
+        res.redirect('/dashboard')
+    }else if(user.post="Legal Team Member"){
+        const id= req.params.id.toString();
+
+        var q= id.replace('resolution_', '');
+        const quer= await Query.findById(q);
+        const data= req.body;
+        quer.resolution= data.body;
+        quer.status= "Resolved";
+        quer.save();
+
+        res.redirect('/queries');
+    }
 })
 
 app.listen(8080, ()=>{
