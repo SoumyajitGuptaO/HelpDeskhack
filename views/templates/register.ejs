@@ -1,0 +1,26 @@
+<% layout('layout/../boilerplate.ejs') %>
+
+<link rel="stylesheet" href="styles/register.css">k
+
+<form action="/register" method="post">
+    <h2>Register</h2>
+    <label for="fullname">Enter Full Name: </label>
+    <input type="text" placeholder="Full Name" name="fullname">
+    <br>
+    <label for="username">Enter a Username: </label>
+    <input type="text" placeholder="Username" name="username">
+    <br>
+    <label for="email">Enter your Email: </label>
+    <input type="email" placeholder="Email Id" name="email">
+    <br>
+    <label for="username">Enter your Phone Number: </label>
+    <input type="number" placeholder="Phone Number" name="phone">
+    <br>
+    <label for="post">Enter your Post: </label>
+    <input type="text" placeholder="Post" name="post">
+    <br>
+    <label for="password">Enter a Password: </label>
+    <input type="password" placeholder="Password" name="password">
+    <br>
+    <button type="submit">Submit</button>
+</form>
