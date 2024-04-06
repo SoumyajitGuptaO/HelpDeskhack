@@ -138,6 +138,8 @@ app.get('/queries', isLoggedIn, async(req, res)=>{
         var Q= await Query.find({author: user.username});
     }else if(user.post=="Legal Team Member"){
         var Q= await Query.find({assignedto: user._id})
+    }else{
+        var Q= await Query.find({});
     }
 
     res.render('templates/queries.ejs', {user, Q});
