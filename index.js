@@ -15,7 +15,8 @@ const LocalStrategy= require('passport-local');
 const ejsMate = require('ejs-mate');
 const User= require('./models/userschema.js');
 const Query= require('./models/queryschema.js')
-const dbUrl= 'mongodb://localhost:27017/helpdesk';
+//const dbUrl= 'mongodb://localhost:27017/helpdesk';
+const dbUrl= process.env.DB_URL;
 const MongoDBStore= require("connect-mongo");
 const secret='thisshouldbeabettersecret';
 
