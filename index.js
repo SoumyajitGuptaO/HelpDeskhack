@@ -15,10 +15,15 @@ const LocalStrategy= require('passport-local');
 const ejsMate = require('ejs-mate');
 const User= require('./models/userschema.js');
 const Query= require('./models/queryschema.js')
+<<<<<<< Updated upstream
 //const dbUrl= 'mongodb://localhost:27017/helpdesk';
+=======
+// const dbUrl= 'mongodb://localhost:27017/helpdesk';
+>>>>>>> Stashed changes
 const dbUrl= process.env.DB_URL;
 const MongoDBStore= require("connect-mongo");
 const secret='thisshouldbeabettersecret';
+const {isLoggedIn, isAdmin, isLegal}= require('./middleware.js')
 
 mongoose.connect(dbUrl);
 
@@ -81,7 +86,7 @@ app.get('/login', (req, res) => {
     res.render('templates/login.ejs');
 });
 
-app.get('/profile', (req, res)=>{
+app.get('/profile', isLoggedIn, (req, res)=>{
     const user= req.user;
     res.render('templates/profile.ejs', {user});
 })
@@ -90,7 +95,7 @@ app.post('/login', passport.authenticate('local', {failureRedirect: '/login'}), 
     res.redirect('/profile');
 });
 
-app.get('/logout', (req, res)=>{
+app.get('/logout', isLoggedIn, (req, res)=>{
     req.logout(function (err) {
         if (err) {
             return next(err);
@@ -99,7 +104,7 @@ app.get('/logout', (req, res)=>{
     });
 })
 
-app.get('/dashboard', async(req, res)=>{
+app.get('/dashboard', isLoggedIn, isAdmin, async(req, res)=>{
     const user= req.user;
     const queries= await Query.find({});
     const r= await Query.find({status:'Resolved'});
@@ -107,13 +112,13 @@ app.get('/dashboard', async(req, res)=>{
     res.render('templates/dashboard.ejs', {user, queries, resolved});
 })
 
-app.get('/member/queries', async(req, res)=>{
+app.get('/member/queries',isLoggedIn, isLegal, async(req, res)=>{
     const user= req.user;
     const queries= await Query.find({assignedto: user._id});
     res.render('templates/allquery.ejs', {queries, user});
 })
 
-app.get('/:username/queries', async(req, res)=>{
+app.get('/:username/queries', isLoggedIn, async(req, res)=>{
     const {username}= req.params;
     const user= req.user;
     const u= await User.find({username});
@@ -121,7 +126,7 @@ app.get('/:username/queries', async(req, res)=>{
     res.render('templates/allquery.ejs', {queries, user});
 })
 
-app.get('/query/:id', async(req, res)=>{
+app.get('/query/:id',isLoggedIn, async(req, res)=>{
     const user= req.user;
     const id= req.params.id;
     const q= await Query.findById(id);
@@ -132,7 +137,7 @@ app.get('/query/:id', async(req, res)=>{
     res.render('templates/admin_viewquery.ejs', {user, q, users, auth});
 })
 
-app.post('/assign/:uid/:qid', async(req, res)=>{
+app.post('/assign/:uid/:qid', isLoggedIn, isAdmin, async(req, res)=>{
     const assignId= req.params.uid;
     const queryId= req.params.qid;
 
@@ -143,12 +148,12 @@ app.post('/assign/:uid/:qid', async(req, res)=>{
     res.redirect('/dashboard');
 })
 
-app.get('/raiseticket', (req, res)=>{
+app.get('/raiseticket', isLoggedIn, (req, res)=>{
     const user= req.user;
     res.render('templates/raiseticket.ejs', {user})
 })
 
-app.post('/raiseticket', async(req, res)=>{
+app.post('/raiseticket', isLoggedIn, async(req, res)=>{
     var today = new Date();
 
     var monthNames = [
@@ -175,7 +180,7 @@ app.post('/raiseticket', async(req, res)=>{
     res.redirect(`/${user.username}/queries`);
 })
 
-app.get('/viewresolution/:id', async(req, res)=>{
+app.get('/viewresolution/:id', isLoggedIn, async(req, res)=>{
     const user= req.user;
     const {id}= req.params;
 
@@ -190,7 +195,7 @@ app.get('/viewresolution/:id', async(req, res)=>{
     res.render('templates/viewquery.ejs', {user, q, auth, resolvedby});
 })
 
-app.get('/resolve/:qid', async(req, res)=>{
+app.get('/resolve/:qid', isLoggedIn, async(req, res)=>{
     const user= req.user;
     const queryId= req.params.qid;
 
@@ -200,7 +205,7 @@ app.get('/resolve/:qid', async(req, res)=>{
     res.render('templates/resolutionform.ejs', {user, q, author})
 })
 
-app.post('/resolve/:id', async(req, res)=>{
+app.post('/resolve/:id', isLoggedIn, async(req, res)=>{
     const {id}= req.params;
 
     const q= await Query.findById(id);
