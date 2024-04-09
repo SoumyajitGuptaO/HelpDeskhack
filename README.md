@@ -16,3 +16,5 @@ Installation and Setup
    username: admin
    
    password: admin
+
+** Due to lack of time, our website is    not that good in responsiveness 
