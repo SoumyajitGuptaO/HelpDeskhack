@@ -9,9 +9,10 @@ Installation and Setup
 3. Start the server
    node index.js
 4. Visit http://localhost:8000 in your web browser to access the application
-
-** Due to some unknown issue the registration is not working on Phone (for deployed website).
+   
 
 ** To use the features of Admin:
+
    username: admin
+   
    password: admin
