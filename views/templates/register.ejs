@@ -24,19 +24,19 @@
                                 <h4 class="text-dark mb-4">Create an Account!</h4>
                             </div>
                             <form class="user" action="/register" enctype="multipart/form-data" method="post">
-                                <div class="mb-3"><input class="form-control form-control-user" type="text" id="fullname" placeholder="Full Name" name="fullname"></div>
-                                <div class="mb-3"><input class="form-control form-control-user" type="text" id="username" placeholder="Username" name="username"></div>
-                                <div class="mb-3"><input class="form-control form-control-user" type="email" id="email" placeholder="Email Address" name="email"></div>
-                                <div class="mb-3"><input class="form-control form-control-user" type="number" id="phone" placeholder="Phone Number" name="phone"></div>
-                                <div class="mb-3"><input class="form-control form-control-user" type="text" id="address" placeholder="Address" name="address"></div>
+                                <div class="mb-3"><input class="form-control form-control-user" type="text" id="fullname" placeholder="Full Name" name="fullname" required></div>
+                                <div class="mb-3"><input class="form-control form-control-user" type="text" id="username" placeholder="Username" name="username" required></div>
+                                <div class="mb-3"><input class="form-control form-control-user" type="email" id="email" placeholder="Email Address" name="email" required></div>
+                                <div class="mb-3"><input class="form-control form-control-user" type="number" id="phone" placeholder="Phone Number" name="phone" required></div>
+                                <div class="mb-3"><input class="form-control form-control-user" type="text" id="address" placeholder="Address" name="address" required></div>
                                 <div class="row mb-3">
-                                    <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="text" id="city" placeholder="City" name="city"></div>
-                                    <div class="col-sm-6"><input class="form-control form-control-user" type="text" id="country" placeholder="Country" name="country"></div>
+                                    <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="text" id="city" placeholder="City" name="city" required></div>
+                                    <div class="col-sm-6"><input class="form-control form-control-user" type="text" id="country" placeholder="Country" name="country" required></div>
                                 </div>
-                                <div class="mb-3"><input class="form-control form-control-user" type="password" id="password" placeholder="Password" name="password"></div>
+                                <div class="mb-3"><input class="form-control form-control-user" type="password" id="password" placeholder="Password" name="password" required></div>
                                 <div class="input-group mb-3">
                                     <label class="input-group-text" for="inputGroupFile01">Upload your image</label>
-                                    <input type="file" class="form-control" name="image" id="inputGroupFile01">
+                                    <input type="file" class="form-control" name="image" id="inputGroupFile01" required>
                                   </div>
                                 <div class="mb-3">
                                     <div class="form-check form-check-inline">
